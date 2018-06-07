@@ -16,6 +16,8 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 bullet_img = pygame.image.load(os.path.join(my_path, "Image\\alo1234.png"))
 my_image = pygame.image.load(os.path.join(my_path, "Image\\galaxy.jpg"))
 ship_img = pygame.image.load(os.path.join(my_path, "Image\\nnn.png"))
+enemy_img = pygame.image.load(os.path.join(my_path, "Image\\millennium_eye___render_by_alanmac95-daqixic.png"))
+enemy_img = pygame.transform.scale(enemy_img,(20,20))
 ship_img = pygame.transform.scale(ship_img,(30,40))
 bullet_img = pygame.transform.scale(bullet_img,(10,20))
 #
@@ -72,8 +74,8 @@ class Player(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([20,10])
-        self.image.fill(WHITE)
+        self.image = enemy_img
+        # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100,-40,step=10)
