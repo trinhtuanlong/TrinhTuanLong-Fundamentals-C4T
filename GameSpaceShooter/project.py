@@ -16,8 +16,10 @@ my_path = os.path.abspath(os.path.dirname(__file__))
 bullet_img = pygame.image.load(os.path.join(my_path, "Image\\alo1234.png"))
 my_image = pygame.image.load(os.path.join(my_path, "Image\\galaxy.jpg"))
 ship_img = pygame.image.load(os.path.join(my_path, "Image\\nnn.png"))
-enemy_img = pygame.image.load(os.path.join(my_path, "Image\\millennium_eye___render_by_alanmac95-daqixic.png"))
-enemy_img = pygame.transform.scale(enemy_img,(20,20))
+enemy_img1 = pygame.image.load(os.path.join(my_path, "Image\\millennium_eye___render_by_alanmac95-daqixic.png"))
+enemy_img2 = pygame.image.load(os.path.join(my_path, "Image\\img.png"))
+enemy_img1 = pygame.transform.scale(enemy_img1,(20,20))
+enemy_img2 = pygame.transform.scale(enemy_img2,(20,20))
 ship_img = pygame.transform.scale(ship_img,(30,40))
 bullet_img = pygame.transform.scale(bullet_img,(10,20))
 #
@@ -72,14 +74,15 @@ class Player(pygame.sprite.Sprite):
 
 
 class Enemy(pygame.sprite.Sprite):
+    speedy_list = [5,10,5,10]
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = enemy_img
+        self.image = enemy_img2
         # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100,-40,step=10)
-        self.speedy = random.randrange(5,10,step=5)
+        self.speedy = self.speedy_list[random.randrange(-1,3)]
         self.speedx = random.randrange(-3,3)
     def update(self):
         self.rect.y += self.speedy
@@ -123,6 +126,7 @@ bullets = pygame.sprite.Group()
 all_sprites.add(player)
 for i in range(10):
     evil = Enemy()
+    if evil.speedy <7: evil.image = enemy_img1
     all_sprites.add(evil)
     enemy.add(evil)
 
@@ -173,6 +177,24 @@ def quit():
     en = False
     intro = False
     running = False
+def again():
+    global running,enemy,all_sprites,screen,FPS,score,x,intro,en
+    score.score = 0
+    FPS = 30
+    running = True
+    screen.fill(BLACK)
+    screen.blit(my_image,(0,0))
+    all_sprites.remove(enemy)
+    enemy = pygame.sprite.Group()
+    for i in range(10):
+        evil = Enemy()
+        if evil.speedy <7: evil.image = enemy_img1
+        all_sprites.add(evil)
+        enemy.add(evil)
+    intro1()
+    x = str(score.score)
+    intro = True
+    en = True
 
 def intro1():
     global intro,running,en
@@ -221,7 +243,7 @@ def end():
         screen.blit(TextSurf, TextRect)
         screen.blit(TextSurf1, TextRect1)
 
-        button("CONTINUE", 40, 530, 65, 40, green, bright_green, intro1)
+        button("CONTINUE", 40, 530, 65, 40, green, bright_green, again)
         button("QUIT", 150, 530, 65, 40, red, bright_red, quit)
 
         pygame.display.update()
@@ -259,8 +281,11 @@ def game_with_comvis():
         #     player.rect.x -= 10
         # if c == keys[pygame.K_d]:
         #     player.rect.x += 10
-        if c == pygame.K_SPACE:
+        if c == pygame.K_UP:
             FPS += 3
+            c = 0
+        if c == pygame.K_DOWN:
+            FPS -= 3
             c = 0
         if vision.get_len() != 0:
             player.shoot()
@@ -275,6 +300,7 @@ def game_with_comvis():
         for hit in hits:
             play_music(os.path.join(my_path, "Sound\\bullet.wav"),1,1)
             evil = Enemy()
+            if evil.speedy <7: evil.image = enemy_img1
             all_sprites.add(evil)
             enemy.add(evil)
             FPS += 0.5
@@ -320,8 +346,11 @@ def game_with_keyboard():
             player.rect.x -= 5
         if c == pygame.K_d:
             player.rect.x += 5
-        if c == pygame.K_SPACE:
+        if c == pygame.K_UP:
             FPS += 3
+            c = 0
+        if c == pygame.K_DOWN:
+            FPS -= 3
             c = 0
         # if posX != 0 and posY != 0:
         #     player.rect.x = posX -50
@@ -334,6 +363,7 @@ def game_with_keyboard():
         for hit in hits:
             play_music(os.path.join(my_path, "Sound\\bullet.wav"),1,1)
             evil = Enemy()
+            if evil.speedy <7: evil.image = enemy_img1
             all_sprites.add(evil)
             enemy.add(evil)
             # global FPS
@@ -355,7 +385,9 @@ def game_with_keyboard():
 
 intro1()
 x = str(score.score)
-end()
+while True:
+    end()
+    if running == False and intro == False and en == False: break
 # if running == False:
 #     pygame.quit()
 
