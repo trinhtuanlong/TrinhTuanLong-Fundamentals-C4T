@@ -15,15 +15,18 @@ def play_music(x,n,y):
 my_path = os.path.abspath(os.path.dirname(__file__))
 bullet_img = pygame.image.load(os.path.join(my_path, "Image\\alo1234.png"))
 my_image = pygame.image.load(os.path.join(my_path, "Image\\galaxy.jpg"))
+end_image = pygame.image.load(os.path.join(my_path, "Image\\lose.jpg"))
 ship_img = pygame.image.load(os.path.join(my_path, "Image\\nnn.png"))
 enemy_img1 = pygame.image.load(os.path.join(my_path, "Image\\millennium_eye___render_by_alanmac95-daqixic.png"))
 enemy_img2 = pygame.image.load(os.path.join(my_path, "Image\\img.png"))
+end_image = pygame.transform.scale(end_image,(800,600))
+my_image = pygame.transform.scale(my_image,(800,600))
 enemy_img1 = pygame.transform.scale(enemy_img1,(20,20))
 enemy_img2 = pygame.transform.scale(enemy_img2,(20,20))
 ship_img = pygame.transform.scale(ship_img,(30,40))
 bullet_img = pygame.transform.scale(bullet_img,(10,20))
 #
-WIDTH = 240
+WIDTH = 800
 HEIGHT = 600
 FPS = 34
 shootdelay = 0.14
@@ -41,6 +44,7 @@ bright_yellow = (204,204,0)
 # initialize pygame and create window
 pygame.init()
 pygame.mixer.init()
+pygame.font.init()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 screen.blit(my_image, (100, 100))
 pygame.display.set_caption("Space shooting")
@@ -50,7 +54,6 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = ship_img
-        # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2,HEIGHT -20)
         self.lastshot = 0
@@ -124,7 +127,7 @@ score = ScoreBoard()
 enemy = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 all_sprites.add(player)
-for i in range(10):
+for i in range(20):
     evil = Enemy()
     if evil.speedy <7: evil.image = enemy_img1
     all_sprites.add(evil)
@@ -139,12 +142,13 @@ c = -1
 # intro and end
 
 def text_objects(text, font):
-    textSurface = font.render(text, True, WHITE)
+    textSurface = font.render(text, True, (105,20,248))
     return textSurface, textSurface.get_rect()
 
 def button(msg, x, y, w, h, ic, ac, action = None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
+    pygame.font.init()
 
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
         pygame.draw.rect(screen, ac, (x, y, w, h))
@@ -186,7 +190,7 @@ def again():
     screen.blit(my_image,(0,0))
     all_sprites.remove(enemy)
     enemy = pygame.sprite.Group()
-    for i in range(10):
+    for i in range(20):
         evil = Enemy()
         if evil.speedy <7: evil.image = enemy_img1
         all_sprites.add(evil)
@@ -213,9 +217,9 @@ def intro1():
         TextRect.center = ((WIDTH / 2), (HEIGHT / 2))
         screen.blit(TextSurf, TextRect)
 
-        button("Keyboard",80, 430, 100, 40,yellow,bright_yellow, play)
-        button("Webcam", 80, 480, 100, 40, green, bright_green, play_com_vis)
-        button("QUIT", 90, 530, 80, 40, red, bright_red,quit)
+        button("Keyboard",350, 430, 100, 40,yellow,bright_yellow, play)
+        button("Webcam", 350, 480, 100, 40, green, bright_green, play_com_vis)
+        button("QUIT", 360, 530, 80, 40, red, bright_red, pygame.quit)
         # button("ABOUT",40,330,60,40, green,green, about)
 
 
@@ -235,6 +239,7 @@ def end():
                 quit()
 
         screen.fill(BLACK)
+        screen.blit(end_image,(0,0))
         largeText = pygame.font.Font('freesansbold.ttf', 30)
         TextSurf, TextRect = text_objects(x, largeText)
         TextSurf1, TextRect1 = text_objects("Your score :", largeText)
@@ -243,8 +248,8 @@ def end():
         screen.blit(TextSurf, TextRect)
         screen.blit(TextSurf1, TextRect1)
 
-        button("CONTINUE", 40, 530, 65, 40, green, bright_green, again)
-        button("QUIT", 150, 530, 65, 40, red, bright_red, quit)
+        button("CONTINUE", 40, 530, 150, 40, green, bright_green, again)
+        button("QUIT", 650, 530, 65, 40, red, bright_red, quit)
 
         pygame.display.update()
 
