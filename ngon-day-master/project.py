@@ -144,7 +144,7 @@ class Bullet(pygame.sprite.Sprite):
 class Powerup(pygame.sprite.Sprite):
     def __init__(self,center):
         pygame.sprite.Sprite.__init__(self)
-        self.type = random.choice(['shield','shot','clone'])
+        self.type = random.choice(['shield','shot','clone','destroy'])
         self.image = powerup_img[self.type]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
@@ -412,7 +412,8 @@ powerup_img ={}
 powerup_img['shield'] = pygame.image.load(os.path.join(my_path, "Image\\shield_gold.png")).convert()
 powerup_img['clone'] = pygame.image.load(os.path.join(my_path, "Image\\life.png")).convert()
 powerup_img['shot'] = pygame.image.load(os.path.join(my_path, "Image\\bolt_gold.png")).convert()
-powerup_img['destroy'] = pygame.image.load(os.path.join(my_path, "Image\\sonicExplosion00.png")).convert()
+powerup_img['destroy'] = pygame.transform.scale((pygame.image.load(os.path.join(my_path, "Image\\sonicExplosion00.png")).convert()),(40,40))
+expl = pygame.transform.scale((pygame.image.load(os.path.join(my_path, "Image\\sonicExplosion00.png")).convert()),(750,750))
 #Load music
 explosion_music = pygame.mixer.Sound(os.path.join(my_path, "Sound\\explosion.wav"))
 bullet_music = pygame.mixer.Sound(os.path.join(my_path, "Sound\\bullet.wav"))
@@ -424,6 +425,8 @@ running = True
 game_over = True
 bien_phu = -100
 clone_number = 0
+destroyn = 0
+destroy_time = 0
 c = -1
 
 pygame.mixer.music.play(loops = -1)
@@ -486,7 +489,7 @@ while running:
         bullet_music.play()
         expl_lg = Explosion(hit.rect.center,'lg')
         all_sprites.add(expl_lg)
-        if random.random() > 0.5:
+        if random.random() > 0.91:
             pow = Powerup(hit.rect.center)
             all_sprites.add(pow)
             powerups.add(pow)
@@ -518,23 +521,22 @@ while running:
             clones.add(clone1)
             all_sprites.add(clone2)
             clones.add(clone2)
-        # if hit.type == 'destroy':
-        #     destroy_time = pygame.time.get_ticks()
-        #     destroyn += 1
-        #     all_sprites.remove(enemy)
-        #     enemy.empty()
+        if hit.type == 'destroy':
+            destroyn += 1
+            all_sprites.remove(enemy)
+            enemy.empty()
     if clone_number > 0 and (time.time() - clone1.then) > (clone_number + 4):
-        if (time.time() - clone1.then) < (clone_number + 4.05):
-            print('gg')
+        if (time.time() - clone1.then) < (clone_number + 4.06):
             clone_number -= 1
             all_sprites.remove(clones)
             clones.empty()
         clone1.then = time.time()
-    # if destroyn > 0 and pygame.time.get_ticks() - destroy_time > 3:
-    #     destroyn -= 1
-    #     if pygame.time.get_ticks() - destroy_time < 3.01:
-    #         for i in range(30):
-    #             new_enemy()
+    if destroyn > 0 and time.time() - destroy_time > 1:
+        if time.time() - destroy_time < 1.09:
+            destroyn -= 1
+            for i in range(30):
+                new_enemy()
+        destroy_time = time.time()
     if player.lives == 0 and not expl_sn.alive():
         if not cam:
             vision.endend()
